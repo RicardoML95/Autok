@@ -101,8 +101,9 @@ flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
 ACCESS_TOKEN = "TU_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "TU_ID_INSTAGRAM"
 
-def upload_instagram_reel(video_path, caption=""):
-    # ...
+from uploaders.upload_instagram import upload_instagram_reel
+
+upload_instagram_reel("videos_to_upload/video1.mp4", "¡Nuevo video!")
 ```
 
 > ⚠️ Requiere subir el video a un servidor accesible o usar Graph API para archivos locales.

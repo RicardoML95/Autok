@@ -7,29 +7,34 @@ INSTAGRAM_ACCOUNT_ID = "TU_ID_INSTAGRAM"
 VIDEO_PATH = "videos_to_upload/video1.mp4"
 
 def upload_instagram_reel(video_path, caption=""):
+    """Sube un video local como Reel a Instagram usando la Graph API."""
     print("🔄 Subiendo Reel...")
-    video = open(video_path, "rb")
-
-    # 1. Subir video en background
     url = f"https://graph.facebook.com/v19.0/{INSTAGRAM_ACCOUNT_ID}/media"
     params = {
-        "video_url": "https://tuvideoserver.com/video1.mp4",  # O necesitas subirlo a un host primero
         "caption": caption,
         "media_type": "REEL",
-        "access_token": ACCESS_TOKEN
+        "access_token": ACCESS_TOKEN,
     }
-    res = requests.post(url, params=params)
+    with open(video_path, "rb") as video:
+        files = {"video_file": video}
+        res = requests.post(url, data=params, files=files)
+    res.raise_for_status()
     creation_id = res.json().get("id")
 
     # 2. Publicar Reel
-    publish_url = f"https://graph.facebook.com/v19.0/{INSTAGRAM_ACCOUNT_ID}/media_publish"
+    publish_url = (
+        f"https://graph.facebook.com/v19.0/{INSTAGRAM_ACCOUNT_ID}/media_publish"
+    )
     publish_params = {
         "creation_id": creation_id,
-        "access_token": ACCESS_TOKEN
+        "access_token": ACCESS_TOKEN,
     }
-    time.sleep(5)  # esperar unos segundos
+    time.sleep(5)
 
-    pub_res = requests.post(publish_url, params=publish_params)
+    pub_res = requests.post(publish_url, data=publish_params)
+    pub_res.raise_for_status()
     print("✅ Reel publicado")
 
-upload_instagram_reel(VIDEO_PATH, "Descripción de prueba")
+
+if __name__ == "__main__":
+    upload_instagram_reel(VIDEO_PATH, "Descripción de prueba")
