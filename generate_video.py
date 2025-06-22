@@ -10,6 +10,7 @@ import requests  # Agregar para descargar audio de TikTok TTS
 from datetime import datetime
 import datetime
 import base64
+from config.paths import OUTPUT_PATH, FLAG_DIR, MUSIC_FILE
 
 change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"})
 
@@ -43,19 +44,15 @@ def crear_carpetas_salida(output_path):
 
 
 # Configuración
-FLAG_DIR = r"C:\Users\ricar\OneDrive\Documentos\GitHub\Autok\flags"
-OUTPUT_PATH = r"C:\Users\ricar\OneDrive\Documentos\GitHub\Autok\output"
 FONT_NAME = "PoetsenOne"
 SHOW_DURATION = 3 
 GUESS_DURATION = 2
 VIDEO_SIZE = (1080, 1920)
-MUSIC_FILE = [r"C:\Users\ricar\OneDrive\Documentos\GitHub\Autok\resources\music_background_1.mp3",
-              r"C:\Users\ricar\OneDrive\Documentos\GitHub\Autok\resources\music_background_2.mp3",
-              r"C:\Users\ricar\OneDrive\Documentos\GitHub\Autok\resources\music_background_3.mp3"]
 BACKGROUND_FILE = "resources/campo_landscape.mp4"
 FLAG_LANG = "en"
 FLAG_BASE_DIR = os.path.join(FLAG_DIR, FLAG_LANG)
 DIFFICULTY_CATEGORIES = ["easy", "medium", "hard", "very difficult"]
+DIFFICULTY_CATEGORIES_TRANSLATED = {"easy": "fácil", "medium": "media", "hard": "difícil", "very difficult": "muy difícil"}
 DIFFICULTY_COLORS = {"easy": "green", "medium": "yellow", "hard": "red", "very difficult": "purple"}
 DIFFICULTY_WEIGHTS = [4, 4, 2, 1]  # easy:2/6, medium:2/6, hard:1/6, very difficult:1/6
 NUM_FLAGS = 1
@@ -107,7 +104,7 @@ for lang, lang_name_key, tts_lang, tiktok_voice in [
     clips = []
     # --- INTRO CLIP ---
     intro_text1 = "GUESS THE FLAGS!" if lang == "en" else "¡ADIVINA LAS BANDERAS!"
-    intro_text2 = f"{elegida_categoria.upper()} EDITION" if lang == "en" else f"EDICIÓN {elegida_categoria.upper()}"
+    intro_text2 = f"{elegida_categoria.upper()} EDITION" if lang == "en" else f"EDICIÓN {DIFFICULTY_CATEGORIES_TRANSLATED[elegida_categoria].upper()}"
 
     # Texto con borde negro y letras blancas, posiciones personalizadas
     intro_clip1 = TextClip(
@@ -172,7 +169,7 @@ for lang, lang_name_key, tts_lang, tiktok_voice in [
     # Generar clips de banderas/textos SIN fondo para cada segmento
     for f in selected_flags_info:
         path = f['path']
-        country = f['name_' + lang]
+        country = f['name_' + lang].capitalize()
         print(f"Procesando {country}...")
         img = Image.open(path).convert("RGB")
         img_ratio = img.width / img.height
@@ -259,7 +256,7 @@ for lang, lang_name_key, tts_lang, tiktok_voice in [
 
 
     # --- CLIP FINAL: Comment your score! ---
-    final_text = "COMMENT YOUR SCORE!"
+    final_text = "COMMENT YOUR SCORE!" if lang == "en" else "¡COMENTA TU PUNTUACIÓN!"
     final_score_placeholder = f"?/{NUM_FLAGS}"
 
     # Texto principal leído
